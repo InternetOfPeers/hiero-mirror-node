@@ -347,15 +347,17 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
 
                 verify(streamFile, signature);
 
+                var archiveDestinationFolder = importerProperties
+                        .getStreamPath()
+                        .resolve(streamFileData.getFilename().substring(0, 10));
+
                 if (downloaderProperties.isWriteFiles()) {
-                    Utility.archiveFile(
-                            streamFileData.getFilePath(), streamFile.getBytes(), importerProperties.getStreamPath());
+                    Utility.archiveFile(streamFileData.getFilePath(), streamFile.getBytes(), archiveDestinationFolder);
                 }
 
                 if (downloaderProperties.isWriteSignatures()) {
-                    var destination = importerProperties.getStreamPath();
-                    signatures.forEach(
-                            s -> Utility.archiveFile(s.getFilename().getFilePath(), s.getBytes(), destination));
+                    signatures.forEach(s ->
+                            Utility.archiveFile(s.getFilename().getFilePath(), s.getBytes(), archiveDestinationFolder));
                 }
 
                 if (!downloaderProperties.isPersistBytes()) {
@@ -512,7 +514,7 @@ public abstract class Downloader<T extends StreamFile<I>, I extends StreamItem> 
         // shuffle nodes into a random order
         Collections.shuffle(nodes);
 
-        long totalStake = nodes.get(0).getTotalStake();
+        long totalStake = nodes.getFirst().getTotalStake();
         // only keep "just enough" nodes to reach/exceed downloadRatio
         long neededStake = BigDecimal.valueOf(totalStake)
                 .multiply(downloadRatio)

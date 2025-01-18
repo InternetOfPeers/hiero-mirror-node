@@ -45,6 +45,8 @@ public class BalanceDownloaderProperties implements DownloaderProperties {
 
     private boolean writeFiles = false;
 
+    private boolean writeSidecars = false;
+
     private boolean writeSignatures = false;
 
     @Override
